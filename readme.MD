@@ -91,7 +91,7 @@ buckets_objects_oss.BucketsObjects.bucketKeyObjects(api_url="https://developer.a
 
 ```
 
-## 💾 Meta data of model
+## 🏢 Meta data of model
 
 lorel lore lore mlorem lroem lroem
 
@@ -100,13 +100,101 @@ lorel lore lore mlorem lroem lroem
 
 object_urn = 'lorellroem lorem lorem lorem lorem lorem'
 
-meta_data.ManageMetaData.metaData(api_url='https://developer.api.autodesk.com/',
+info_model = meta_data.ManageMetaData()
+
+info_model.metaData(api_url='https://developer.api.autodesk.com/',
                                   token=token, 
                                   urn=object_urn,
                                   guid='')
+
 ```
 
 ```json
+{
+    'data': {
+        'type': 'metadata',
+        'metadata': [
+            {
+                'name': '{3D}', 👈
+                'role': '3d',
+                'guid': 'Ac1d49988-b216-67b2-31eb' 👈
+            },
+            {
+                'name': 'ARQ CUTS',
+                'role': '2d',
+                'guid': 'AAA1ad404e49730-76e7457fa0ab'
+            }
+        ]
+    }
+}
 
+```
 
+##### Step 2:  Create DB of Families and Elements
+
+```python
+guid_3d = 'Ac1d49988-b216-67b2-31eb'
+
+info_model.createObjectTreeSqlLite(api_url='https://developer.api.autodesk.com/',
+                                        token=token,
+                                        urn=object_urn,
+                                        guid=data_guid_3,
+                                        sqllite_db_name='autodesk.wabi.db',
+                                        sqllite_path='/Users/armand/Documents/httdocs/Librerias/aps_sdk/csv/db')
+
+```
+
+##### Step 3:  Print the tree view
+lorel lorel lore lore
+
+```python
+tree_json = info_model.getObjectTreeSqlLite(sqllite_db_name='autodesk.wabi.db',
+                                            sqllite_path='/Users/armand/Documents/httdocs/Librerias/aps_sdk/csv/db')
+
+```
+
+JSON
+
+```json
+[
+    {
+        "name": "Pads",
+        "objectid": 462,
+        "children": [
+            {
+                "name": "Pad",
+                "objectid": 81334,
+                "children": [
+                    {
+                        "name": "BC_PLATAFORMA TERRENO WABI",
+                        "objectid": 81336,
+                        "children": [
+                            {
+                                "name": "Pad",
+                                "objectid": 3494,
+                                "children": []
+                            },
+                            {
+                                "name": "Pad",
+                                "objectid": 3493,
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "name": "BC_Plataforma de construcci\u00f3n",
+                        "objectid": 81335,
+                        "children": [
+                            {
+                                "name": "Pad",
+                                "objectid": 11292,
+                                "children": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]
 ```
