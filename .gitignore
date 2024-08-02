@@ -171,4 +171,8 @@ poetry.toml
 pyrightconfig.json
 /csv
 /test
+/csv/
+/test/
 command.txt
+test.py
+test_2.py
