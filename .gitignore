@@ -176,3 +176,5 @@ pyrightconfig.json
 command.txt
 test.py
 test_2.py
+families.py
+properties.py
