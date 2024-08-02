@@ -191,7 +191,7 @@ class ManageMetaData:
             logging.error(error)
         return status
 
-    def metaDataBig(self,api_url='https://developer.api.autodesk.com/',token='', urn='',guid=''):
+    def getAllPropertiesQuery(self,api_url='https://developer.api.autodesk.com/',token='', urn='',guid='',query=''):
         """
         Returns a list of model views (Viewables) in the source design specified by the urn URI parameter. 
         It also returns the ID that uniquely identifies the model view. You can use this ID with other metadata endpoints
@@ -214,19 +214,20 @@ class ManageMetaData:
         @params:guid
         @type:string
 
+        @params:query
+        @type:{}
+
         @Return: status
         @type:[]
         """
-        status = []
+        query_set = []
         try:
-            headers = {'content-type': 'application/json','Authorization': 'Bearer ' + str(token), 'x-ads-region': 'US'}
-            path_url = f"{api_url}modelderivative/v2/designdata/{urn}/metadata/{guid}/properties:query"
-            payload = json.dumps({
+            if query != '':
+                headers = {'content-type': 'application/json','Authorization': 'Bearer ' + str(token), 'x-ads-region': 'US'}
+                path_url = f"{api_url}modelderivative/v2/designdata/{urn}/metadata/{guid}/properties:query"
+                payload = json.dumps({
                                 "query": {
-                                    "$contains": [
-                                    "properties.Identity Data.Type Name",
-                                    "Flex - Round"
-                                    ]
+                                    "$in": [ "objectid",3494,3493,11292]
                                 },
                                 "fields": [
                                     "objectid",
@@ -240,17 +241,18 @@ class ManageMetaData:
                                 },
                                 "payload": "text"
                                 })
-            resp_status = requests.post(path_url,data=payload, headers=headers)
-            print(path_url)
-            print(resp_status.text)
-            if resp_status.status_code == 200:
-                status = json.loads(resp_status.text)
+                resp_status = requests.post(path_url,data=payload, headers=headers)
+                
+                if resp_status.status_code == 200:
+                    query_set = json.loads(resp_status.text)
+                else:
+                    query_set = []
+                    logging.error(resp_status)
             else:
-                status = []
-                logging.error(resp_status)
+                query_set.append({'status':'error','message':'var query could be empty'})
         except Exception as error:
             logging.error(error)
-        return status
+        return query_set
 
     def createObjectTreeSqlLite(self,api_url='https://developer.api.autodesk.com/',token='', urn='',guid='',sqllite_db_name='',sqllite_path=''):
         """
@@ -266,7 +268,7 @@ class ManageMetaData:
         @params:guid
         @type:string
 
-        @Return: status 201,500,message
+        @Return: {}
         @type:[]
         """
         data_tree = []
@@ -354,4 +356,69 @@ class ManageMetaData:
         except Exception as error:
             logging.error(error)
         return data_tree
+    
+
+    def getPropertiesQuerySaveSqlLite(self,api_url='https://developer.api.autodesk.com/',token='', urn='',guid='',query='',sqllite_db_name='',sqllite_path=''):
+        """
+        Returns a list of model views (Viewables) in the source design specified by the urn URI parameter. 
+        It also returns the ID that uniquely identifies the model view. You can use this ID with other metadata endpoints
+        to obtain information about the objects within model view.
+
+        Most design applications like Fusion 360 and Inventor contain only one model view per design. However,
+        some applications like Revit allow multiple model views (e.g., HVAC, architecture, perspective) per design.
+
+        Note You can retrieve metadata only from an input file that has been translated to SVF or SVF2.
+
+        @params:api_url
+        @type:string
+
+        @params:token
+        @type:string
+
+        @params:urn
+        @type:string
+
+        @params:guid
+        @type:string
+
+        @params:query
+        @type:{}
+
+        @Return: status
+        @type:[]
+        """
+        query_set = []
+        try:
+            if query != '':
+                if sqllite_db_name !='' and sqllite_path !='':
+                    headers = {'content-type': 'application/json','Authorization': 'Bearer ' + str(token), 'x-ads-region': 'US'}
+                    path_url = f"{api_url}modelderivative/v2/designdata/{urn}/metadata/{guid}/properties:query"
+                    payload = json.dumps({
+                                    "query": {
+                                        "$in": [ "objectid",3494,3493,11292]
+                                    },
+                                    "fields": [
+                                        "objectid",
+                                        "name",
+                                        "externalId",
+                                        "properties"
+                                    ],
+                                    "pagination": {
+                                        "offset": 0,
+                                        "limit": 20
+                                    },
+                                    "payload": "text"
+                                    })
+                    resp_status = requests.post(path_url,data=payload, headers=headers)
+                    
+                    if resp_status.status_code == 200:
+                        query_set = json.loads(resp_status.text)
+                    else:
+                        query_set = []
+                        logging.error(resp_status)
+            else:
+                query_set.append({'status':'error','message':'var query could be empty'})
+        except Exception as error:
+            logging.error(error)
+        return query_set
  

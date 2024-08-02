@@ -198,3 +198,106 @@ JSON
     }
 ]
 ```
+
+
+## 🔎  Get Properties Query
+
+This query get the properties by objectid [4269,438]
+
+```python
+{
+    "query": {
+        "$in": [ "objectid",4269,438]
+    },
+    "fields": [
+        "objectid",
+        "name",
+        "externalId",
+        "properties.Cons*"
+    ],
+    "pagination": {
+        "offset": 0,
+        "limit": 20
+    },
+    "payload": "text"
+}
+
+```
+
+This query use init in the payload
+unit - Applies a filter and returns only the properties that contain numerical values. Additionally, it formats property values as ##<VALUE_OF_PROPERTY><UNIT_OF_VALUE><PRECISION><SYSTEM_UNIT>. For example ##94.172{mm}[3]{m}, where 94.172 is the value of the property, {mm} is the unit of the value, [3] is the precision, and {m} is the metric base unit for the measurement.
+
+```python
+{
+    "query": {
+        "$in": [
+            "objectid",
+            4269,
+            438
+        ]
+    },
+    "fields": [
+        "objectid",
+        "name",
+        "externalId",
+        "properties.Cons*"
+    ],
+    "pagination": {
+        "offset": 0,
+        "limit": 20
+    },
+    "payload": "unit"
+ }
+```
+
+This example retrieves an object by its name and retrieves all properties that belong to the Construction category. Note that the string to match is in lower case, while the actual name is in title case. The case insensitive matching finds the correct object. This example uses a Revit model translated to SVF/SVF2. Among the models you can produce with Autodesk products, Revit models contain the richest set of metadata.
+
+```python
+{
+    "query": {
+        "$eq": [
+            "name",
+            "timber suspended floor"
+        ]
+    },
+    "fields": [
+        "objectid",
+        "name",
+        "externalId",
+        "properties.Construction.*"
+    ],
+    "pagination": {
+        "offset": 0,
+        "limit": 20
+    },
+    "payload": "text"
+}
+```
+
+This example retrieves objects with “Floor” in its name and retrieves all properties that begin with “type”. Note the use of the wildcard * to return properties regardless of the category of the property. This example uses a Revit model translated to SVF/SVF2. Among the models you can produce with Autodesk products, Revit models contain the richest set of metadata.
+
+```python
+{
+    "query": {
+        "$prefix": [
+            "name",
+            "floor"
+        ]
+    },
+    "fields": [
+        "objectid",
+        "name",
+        "externalId",
+        "properties.*.type*"
+    ],
+    "pagination": {
+        "offset": 0,
+        "limit": 20
+    },
+    "payload": "text"
+}
+```
+
+### 🤯 Execute a Query
+```python
+```
