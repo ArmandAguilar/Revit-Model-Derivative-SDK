@@ -5,11 +5,34 @@
 <p align="center"> <img src = "./images/MD-overview-diagram.png" /> </p>
 
 
-## Install
+## Dependency
 
-```python
-pip install .
+```sh
+pip install build
+pip install wheel
+pip install requests
+
 ```
+## Build the lib.
+
+```sh
+python -m build
+```
+
+seek the folder '\dist\aps_sdk-1.0.0-py3-none-any.whl' and install
+
+```sh
+pip install '\dist\aps_sdk-1.0.0-py3-none-any.whl'
+```
+
+## How import ?
+```python
+from model_derivative import auth
+from model_derivative import buckets_oss
+from model_derivative import buckets_objects_oss
+from model_derivative import meta_data
+```
+
 
 ## 🔐 Authentication
 
@@ -321,3 +344,11 @@ info_properties.saveElementesPropertiesSqlLite(api_url='https://developer.api.au
 ```
 ### 💾 Table
 <p align="center"> <img src = "./images/tables_properties.png" /> </p>
+
+## 🍺 Buy me a beer
+
+|BTC|BTC Segwit|LTC|
+|--|--|--|
+|<img src="https://armando-aguilar.com/tips/btc_wallet_red_btc.png" width="150"/>|<img src="https://armando-aguilar.com/tips/btc_segwit_wallet.png" width="150"/>|<img src="https://armando-aguilar.com/tips/ltc_wallet.png" width="150"/>|
+|1JDA4DEkVnB9rvLgLD5Xe9jfU2pJtnCZiG|bc1qwmzcwqqu5gtxh0h7nvvslp6eh3vxj5f92vmw7s|LhDHwQxmRTJDjjzz397XAHkAATwaoDJqQA|
+<p>&nbsp;</p>
