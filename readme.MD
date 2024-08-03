@@ -2,6 +2,8 @@
 [![Supported Versions](https://img.shields.io/pypi/pyversions/requests.svg)]()
 [![License](https://img.shields.io/npm/l/express.svg)]()
 
+<p align="center"> <img src = "./images/MD-overview-diagram.png" /> </p>
+
 
 ## Install
 
@@ -145,7 +147,7 @@ info_model.createObjectTreeSqlLite(api_url='https://developer.api.autodesk.com/'
 ```
 
 ##### Step 3:  Print the tree view
-lorel lorel lore lore
+
 
 ```python
 tree_json = info_model.getObjectTreeSqlLite(sqllite_db_name='autodesk.wabi.db',
