@@ -198,6 +198,10 @@ JSON
     }
 ]
 ```
+### 💾 Tables
+
+<p align="center"> <img src = "./images/tables_properties.png" /> </p>
+
 
 
 ## 🔎  Get Properties Query
@@ -300,4 +304,20 @@ This example retrieves objects with “Floor” in its name and retrieves all pr
 
 ### 🤯 Execute a Query
 ```python
+
+object_urn = 'dXJuOmFkc2sub2JqZWN0czpvAAAAAA'
+gui_3d = 'b216-67b2-31eb-cc8ebde9f8ce'
+
+info_properties = meta_data.ManageMetaData()
+
+info_properties.saveElementesPropertiesSqlLite(api_url='https://developer.api.autodesk.com/',
+                                               token=token,
+                                                urn=object_urn,
+                                                guid=gui_3d,
+                                                objects_ids=[3494,3493,11292],
+                                                sqllite_db_name='autodesk.wabi.db',
+                                                sqllite_path='/Users/armand/Documents/httdocs/Librerias/aps_sdk/csv/db')
+
 ```
+### 💾 Table
+<p align="center"> <img src = "./images/tables_properties.png" /> </p>

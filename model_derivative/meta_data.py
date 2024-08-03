@@ -191,7 +191,7 @@ class ManageMetaData:
             logging.error(error)
         return status
 
-    def getAllPropertiesQuery(self,api_url='https://developer.api.autodesk.com/',token='', urn='',guid='',query=''):
+    def getAllPropertiesQuery(self,api_url='https://developer.api.autodesk.com/',token='', urn='',guid='',query=None):
         """
         Returns a list of model views (Viewables) in the source design specified by the urn URI parameter. 
         It also returns the ID that uniquely identifies the model view. You can use this ID with other metadata endpoints
@@ -222,27 +222,11 @@ class ManageMetaData:
         """
         query_set = []
         try:
-            if query != '':
+            if query != None:
                 headers = {'content-type': 'application/json','Authorization': 'Bearer ' + str(token), 'x-ads-region': 'US'}
                 path_url = f"{api_url}modelderivative/v2/designdata/{urn}/metadata/{guid}/properties:query"
-                payload = json.dumps({
-                                "query": {
-                                    "$in": [ "objectid",3494,3493,11292]
-                                },
-                                "fields": [
-                                    "objectid",
-                                    "name",
-                                    "externalId",
-                                    "properties"
-                                ],
-                                "pagination": {
-                                    "offset": 0,
-                                    "limit": 20
-                                },
-                                "payload": "text"
-                                })
-                resp_status = requests.post(path_url,data=payload, headers=headers)
-                
+                resp_status = requests.post(path_url,data=json.dumps(query), headers=headers)
+                #print(resp_status.text)
                 if resp_status.status_code == 200:
                     query_set = json.loads(resp_status.text)
                 else:
@@ -326,6 +310,7 @@ class ManageMetaData:
 
                     conn.commit()
                     status = {'status':201,'message':'data loaded'}
+                conn.close()
             else:
                 status = []
                 logging.error(resp_status)
@@ -358,7 +343,7 @@ class ManageMetaData:
         return data_tree
     
 
-    def getPropertiesQuerySaveSqlLite(self,api_url='https://developer.api.autodesk.com/',token='', urn='',guid='',query='',sqllite_db_name='',sqllite_path=''):
+    def saveElementesPropertiesSqlLite(self,api_url='https://developer.api.autodesk.com/',token='', urn='',guid='',objects_ids='',sqllite_db_name='',sqllite_path=''):
         """
         Returns a list of model views (Viewables) in the source design specified by the urn URI parameter. 
         It also returns the ID that uniquely identifies the model view. You can use this ID with other metadata endpoints
@@ -381,44 +366,65 @@ class ManageMetaData:
         @params:guid
         @type:string
 
-        @params:query
-        @type:{}
+        @params:objects_ids
+        @type:str
 
         @Return: status
         @type:[]
         """
-        query_set = []
+        status = {'status':500,'message':'error to load data'}
         try:
-            if query != '':
+            if len(objects_ids) > 0:
                 if sqllite_db_name !='' and sqllite_path !='':
+                    #1 GET DATA 
                     headers = {'content-type': 'application/json','Authorization': 'Bearer ' + str(token), 'x-ads-region': 'US'}
                     path_url = f"{api_url}modelderivative/v2/designdata/{urn}/metadata/{guid}/properties:query"
-                    payload = json.dumps({
+                    payload = {
                                     "query": {
-                                        "$in": [ "objectid",3494,3493,11292]
+                                        "$in": [ "objectid",]
                                     },
-                                    "fields": [
-                                        "objectid",
-                                        "name",
-                                        "externalId",
-                                        "properties"
-                                    ],
-                                    "pagination": {
-                                        "offset": 0,
-                                        "limit": 20
-                                    },
-                                    "payload": "text"
-                                    })
-                    resp_status = requests.post(path_url,data=payload, headers=headers)
+                                    "fields": ["objectid","name","externalId","properties"],
+                                    "pagination": {"offset": 0,"limit": 100},
+                                    "payload": "text"}
                     
+                    for ids in objects_ids:
+                        payload["query"]["$in"].append(ids)
+
+                    resp_status = requests.post(path_url,data=json.dumps(payload), headers=headers)
+
+                    #2 SAVE DB
+                    conn = sqlite3.connect(f"{sqllite_path}/{sqllite_db_name}")
+                    cursor = conn.cursor()
+
+                    #2 .- CREATE TABLES
+                    cursor.execute('''
+                        CREATE TABLE IF NOT EXISTS properties (
+                            id INTEGER PRIMARY KEY,
+                            objectid INTEGER,
+                            name TEXT,
+                            properties_data TEXT
+                        )
+                    ''')
+                    conn.commit()
+
+                    #3 .- READ THE DATA
                     if resp_status.status_code == 200:
                         query_set = json.loads(resp_status.text)
+                        
+                        if len(query_set) > 0:
+                            for items in query_set["data"]["collection"]:
+                                print(items['name'])
+                                cursor.execute('INSERT INTO properties (objectid,name,properties_data)  VALUES (?,?,?)', (items['objectid'],items['name'],json.dumps(items['properties'])))
+                                conn.commit()
                     else:
-                        query_set = []
                         logging.error(resp_status)
+                        status = {'status':'ok','message':resp_status}
+                    
+                    conn.close()
+                    status = {'status':'ok','message':f"data saved in {sqllite_db_name}"}
             else:
-                query_set.append({'status':'error','message':'var query could be empty'})
+                status.append({'status':'error','message':'var query could be empty'})
         except Exception as error:
             logging.error(error)
-        return query_set
+        return status
  
