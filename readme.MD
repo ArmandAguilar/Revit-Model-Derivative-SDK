@@ -8,8 +8,6 @@
 ## Install
 
 ```python
-pip install requests
-pip install sphinx
 pip install .
 ```
 

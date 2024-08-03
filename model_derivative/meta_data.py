@@ -6,8 +6,6 @@ import sys
 import json
 import requests
 import sqlite3
-from pymongo import MongoClient
-from bson.objectid import ObjectId
 
 class ManageMetaData:
 
